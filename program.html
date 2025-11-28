@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demografi Penduduk - Desa Sukamenak</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Variabel Warna Utama (Konsisten) */
+        :root {
+            --color-primary: #17a2b8; 
+            --color-secondary: #008080; /* Warna Hijau/Biru Tua Navbar */
+            --color-dark-blue: #008080; /* Warna Latar Footer Baru */
+            --color-text: #333;
+            --color-light: #f8f9fa; 
+            --color-header-table: #3F4750; 
+            --color-header-blue: #007aa3;
+            --color-light-gray: #f2f2f2; 
+            --color-total-row: #e9ecef; 
+            --color-border: #dee2e6;
+            --color-accent-yellow: #ffc107; /* Menambahkan warna kuning aksen */ 
+        }
+
+        /* --- Perubahan untuk Sticky Footer --- */
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--color-light); 
+            color: var(--color-text); 
+            display: flex; /* Aktifkan Flexbox */
+            flex-direction: column; /* Susun item secara vertikal */
+            min-height: 100vh; /* Pastikan tinggi minimal 100% dari viewport */
+        }
+        .main-content-wrapper {
+            flex-grow: 1; /* Konten utama akan mengambil semua ruang yang tersedia */
+        }
+        /* --- Akhir Perubahan Sticky Footer --- */
+
+
+        .container { width: 90%; max-width: 1200px; margin: auto; }
+        .top-header-bar { background-color: #008080; color: white; padding: 5px 0; font-size: 0.8em; display: flex; justify-content: space-between; }
+        .top-header-bar a { color: white; text-decoration: none; margin-left: 15px; }
+        .middle-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; background-color: white; }
+        .site-title { display: flex; align-items: center; }
+        .site-title img { width: 30px; height: 30px; margin-right: 10px; }
+        .site-title h1 { font-size: 1.2em; font-weight: bold; color: var(--color-text); margin: 0; line-height: 1.2; }
+        .site-title p { font-size: 0.8em; color: #666; margin: 0; font-weight: normal; }
+        .search-box-penduduk { display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 250px; }
+        .search-box-penduduk input { border: none; padding: 8px 10px; flex-grow: 1; outline: none; }
+        .search-box-penduduk button { background-color: white; border: none; padding: 8px 12px; color: #666; cursor: pointer; }
+
+
+        /* --- Navigasi Utama (Main Navbar) --- */
+        .main-nav { background-color: var(--color-secondary); color: white; padding: 0; position: relative; z-index: 5; }
+        .main-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: flex-start; }
+        .main-nav ul li a { color: white; padding: 15px 15px; display: block; font-weight: normal; transition: background-color 0.3s; text-decoration: none; font-size: 0.95em; }
+        .main-nav ul li a:hover, .main-nav ul li.active a { background-color: var(--color-dark-blue); }
+        .main-nav ul li.home-link a { padding-left: 10px; padding-right: 10px; }
+        
+        /* [ ... Gaya Sidebar, Content Area, dan Tabel ... ] */
+        .main-content-grid-program { display: grid; grid-template-columns: 280px 1fr; gap: 20px; padding: 30px 0; }
+        .sidebar { overflow: hidden; height: fit-content; background-color: white; border: 1px solid #e0e0e0; border-radius: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .sidebar-header { background-color: var(--color-header-blue); color: white; padding: 12px 15px; font-size: 1.1em; font-weight: bold; border-bottom: 2px solid #005666; }
+        .sidebar-menu ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar-menu li a { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; text-decoration: none; color: var(--color-text); font-size: 0.95em; }
+        .sidebar-menu li.sub-active a { background-color: #d8e6eb; color: var(--color-text); font-weight: bold; } 
+        /* Gaya tambahan untuk menonaktifkan tampilan sub-menu saat tidak aktif */
+        .sidebar-menu ul ul { display: none; padding-left: 0; }
+        .sidebar-menu li.active > ul { display: block; }
+
+        .content-area { background-color: white; padding: 20px; border: 1px solid #e0e0e0; border-radius: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .content-header { border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        h2 { font-size: 1.5em; font-weight: bold; color: #333; }
+        h3 { font-size: 1.2em; font-weight: bold; color: #333; margin-top: 15px; }
+        .data-table-wrapper table { width: 100%; border-collapse: collapse; border: 2px solid var(--color-border); }
+        .data-table-wrapper th, .data-table-wrapper td { padding: 8px 10px; text-align: center; border: 1px solid var(--color-border); }
+        .data-table-wrapper thead tr th { background-color: var(--color-header-table); color: white; }
+        #tabel-demografi td:nth-child(3n + 3), 
+        #tabel-demografi td:nth-child(3n + 5), 
+        #tabel-demografi td:nth-child(3n + 7) { background-color: var(--color-light-gray); }
+        #tabel-demografi tbody tr.total-row td { background-color: var(--color-total-row) !important; font-weight: bold; }
+        
+        /* Tambahan untuk menyembunyikan baris di tabel */
+        #tabel-demografi tbody tr.penerima-row.hidden { display: none; }
+        #tabel-bantuan tbody tr.hidden { display: none; }
+        /* Awalnya, data tambahan disembunyikan */
+        #tabel-bantuan tbody tr:nth-child(n+4) { display: none; }
+
+        .table-footer-buttons { display: flex; justify-content: flex-end; align-items: flex-end; margin-top: 10px; gap: 10px; }
+        .table-footer-buttons p { font-size: 0.8em; color: #999; margin: 0; margin-right: 0; margin-left: auto; padding-top: 5px; }
+        .data-table-wrapper:first-of-type > .table-footer-buttons { justify-content: flex-start; }
+        .data-table-wrapper:first-of-type > .table-footer-buttons > p { margin-right: 0; margin-left: auto; }
+        .btn-tampilkan-nol { background-color: var(--color-primary); color: white; padding: 8px 15px; border-radius: 4px; border: none; font-size: 0.9em; font-weight: 500; cursor: pointer; transition: background-color 0.3s; }
+        .btn-tampilkan-nol:hover { background-color: #1a8b9e; }
+        .chart-buttons button { background-color: #ccc; border: none; padding: 8px 15px; margin-left: 5px; cursor: pointer; border-radius: 4px; transition: all 0.3s; }
+        .chart-buttons button.active { background-color: var(--color-primary); color: white; font-weight: bold; }
+
+        /* --- Footer Bawah Halaman (Full Width) --- */
+        footer { 
+            background-color: var(--color-dark-blue); /* Warna latar penuh layar */
+            color: white; 
+            padding: 40px 0; 
+            width: 100%; /* Memastikan lebar penuh */
+            margin-top: auto; /* Penting untuk Flexbox agar menempel di bawah */
+        }
+        .footer-grid { 
+            display: grid; 
+            grid-template-columns: 2fr 2fr 1fr; 
+            gap: 30px; 
+            padding-bottom: 20px; 
+        }
+        /* >>> PERUBAHAN WARNA JUDUL FOOTER KE KUNING <<< */
+        .footer-grid h4 { 
+            color: var(--color-accent-yellow); /* Mengubah warna judul ke kuning */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+            padding-bottom: 5px; 
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 0;
+        }
+        .footer-grid .contact-info p, .footer-grid p { 
+            margin: 5px 0; 
+            font-size: 0.9em; 
+            color: rgba(255, 255, 255, 0.8);
+        }
+        /* Mengubah warna ikon kontak di kolom HUBUNGI KAMI */
+        .footer-grid .contact-info i { 
+            width: 20px; 
+            text-align: center; 
+            color: var(--color-accent-yellow); /* Mengubah warna ikon ke kuning */
+        }
+        /* Mengubah warna ikon kamera di kolom ALBUM GALERI */
+        .footer-grid div:last-child h4 i { 
+            color: var(--color-accent-yellow); /* Mengubah warna ikon kamera ke kuning */
+        }
+        /* >>> AKHIR PERUBAHAN WARNA JUDUL FOOTER <<< */
+    </style>
+</head>
+<body>
+
+    <div class="main-content-wrapper"> 
+        <div class="top-header-bar">
+            <div class="container">
+                <div class="contact-info">
+                    <span>089678482349</span>
+                    <a href="#">sukamenak@gmail.com</a>
+                </div>
+                <div class="contact-info">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </div>
+        <header class="middle-header">
+            <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="site-title">
+                    <img src="logodesa.jpg" alt="Logo Desa"> <div>
+                        <h1>SISTEM INFORMASI DESA SUKAMENAK</h1>
+                        <p>Kec. Banturujeg Kab. Majalengka</p>
+                    </div>
+                </div>
+                <div class="search-box-program">
+                    <input type="text" placeholder="Cari..." aria-label="Cari di website desa">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <div class="container">
+                <ul>
+                    <li class="home-link"><a href="index.html"><i class="fas fa-home"></i></a></li>
+                    <li><a href="penduduk.html">Penduduk</a></li> 
+                    <li><a href="galeri.html">Galeri</a></li>
+                    <li class="active"><a href="program.html">Program</a></li> 
+                    <li><a href="kategori_berita.html">Berita Desa</a></li>
+                    <li><a href="jdih.html">JDIH</a></li>
+                    <li><a href="pengaduan.html">Pengaduan Warga</a></li>
+                    <li><a href="pembangunan.html">Pembangunan</a></li> 
+                </ul>
+            </div>
+        </nav>
+        <div class="container main-content-grid-program">
+
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <i class="fas fa-chart-bar"></i> Statistik Penduduk
+                </div>
+                <nav class="sidebar-menu">
+                    <ul>
+                        <li><a href="#">Statistik Penduduk <i class="fas fa-angle-down"></i></a></li>
+                        <li><a href="#">Statistik Keluarga <i class="fas fa-angle-down"></i></a></li>
+                        <li id="statistik-bantuan-menu" class="active">
+                            <a href="#" id="bantuan-toggle">Statistik Bantuan <i class="fas fa-angle-up"></i></a>
+                            <ul id="bantuan-submenu">
+                                <li class="sub-active"><a href="#" style="padding-left: 30px; background-color: #d8e6eb;">Penerima Bantuan Penduduk</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Statistik Lainnya <i class="fas fa-angle-down"></i></a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main class="content-area">
+                
+                <div class="content-header">
+                    <h2>Demografi Berdasarkan Penerima Bantuan Penduduk</h2>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3>Grafik Penerima Bantuan Penduduk</h3>
+                    <div class="chart-buttons" style="text-align: right;">
+                        <button class="chart-btn active" data-chart="bar">Bar Graph</button>
+                        <button class="chart-btn" data-chart="pie">Pie Graph</button>
+                    </div>
+                </div>
+
+                <div class="data-table-wrapper">
+                    <h3>Tabel Penerima Bantuan Penduduk</h3>
+                    <table id="tabel-demografi">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 5%;">No</th>
+                                <th rowspan="2" style="width: 25%;">Kelompok</th>
+                                <th colspan="2" style="width: 20%;">Jumlah</th>
+                                <th colspan="2" style="width: 25%;">Laki-laki</th>
+                                <th colspan="2" style="width: 25%;">Perempuan</th>
+                            </tr>
+                            <tr>
+                                <th>n</th>
+                                <th>%</th>
+                                <th>n</th>
+                                <th>%</th>
+                                <th>n</th>
+                                <th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="penerima-row hidden"><td></td><td style="text-align: left;">PENERIMA</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td></tr>
+                            <tr><td></td><td style="text-align: left;">BUKAN PENERIMA</td><td>3751</td><td>100,00%</td><td>1895</td><td>50,52%</td><td>1856</td><td>49,48%</td></tr>
+                            <tr class="total-row"><td></td><td style="text-align: left;">TOTAL</td><td>3751</td><td>100,00%</td><td>1895</td><td>50,52%</td><td>1856</td><td>49,48%</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="table-footer-buttons">
+                        <button class="btn-tampilkan-nol" id="toggle-nol-btn">Tampilkan Nol</button>
+                        <p>Diperbarui pada : 06 Oktober 2025</p>
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+
+                <div class="data-table-wrapper">
+                    <h3>Daftar Penerima Bantuan Penduduk</h3>
+                    <table id="tabel-bantuan">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">No</th>
+                                <th style="width: 25%;">Program</th>
+                                <th style="width: 35%;">Nama Peserta</th>
+                                <th style="width: 35%;">Alamat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>PKH</td><td>Siti Aminah</td><td>Dusun Krajan RT 02/RW 01</td></tr>
+                            <tr><td>2</td><td>BPNT</td><td>Bapak Budi</td><td>Dusun Tengah RT 03/RW 02</td></tr>
+                            <tr><td>3</td><td>BLT Dana Desa</td><td>Ibu Ratna</td><td>Dusun Kalipucang RT 01/RW 03</td></tr>
+                            <tr class="extra-data"><td>4</td><td>PKH</td><td>Pak Tarno</td><td>Dusun Cijati RT 04/RW 04</td></tr>
+                            <tr class="extra-data"><td>5</td><td>BPNT</td><td>Neng Nia</td><td>Dusun Cijati RT 05/RW 04</td></tr>
+                            <tr class="extra-data"><td>6</td><td>PBI-JK</td><td>Pak Udin</td><td>Dusun Krajan RT 01/RW 01</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="table-footer-buttons">
+                        <button class="btn-tampilkan-nol" id="toggle-bantuan-btn">Tampilkan Semua Data (6)</button>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div> 
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <img src="logodesa.jpg" alt="Logo Desa" style="width: 30px; height: 30px; margin-right: 10px;">
+                        <div style="font-size: 1.5em; font-weight: bold;">DESA SUKAMENAK</div>
+                    </div>
+                    <p style="font-size: 0.9em;">Website Resmi Pemerintah Desa Sukamenak, Kecamatan Banturujeg, Kabupaten Majalengka</p>
+                </div>
+                
+                <div class="contact-info">
+                    <h4>HUBUNGI KAMI</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Kantor Desa Sukamenak, Banturujeg, Majalengka, Jawa Barat, 45464, Indonesia.</p>
+                    <p><i class="fas fa-phone"></i> Telepon/Fax: 089678482349</p>
+                    <p><i class="fas fa-mobile-alt"></i> No. HP: 089</p>
+                    <p><i class="fas fa-envelope"></i> Email: sukamenak@gmail.com</p>
+                </div>
+
+                <div>
+                    <h4><i class="fas fa-camera"></i> ALBUM GALERI</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+1" alt="Galeri 1" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+2" alt="Galeri 2" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+3" alt="Galeri 3" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+4" alt="Galeri 4" style="width: 100%; height: auto; border-radius: 3px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // =======================================================
+            // 1. Sidebar Menu Toggle (Statistik Bantuan)
+            // =======================================================
+            const bantuanToggle = document.getElementById('bantuan-toggle');
+            const bantuanSubmenu = document.getElementById('bantuan-submenu');
+            const bantuanIcon = bantuanToggle.querySelector('i');
+            const bantuanMenuLi = document.getElementById('statistik-bantuan-menu');
+
+            bantuanToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const isExpanded = bantuanMenuLi.classList.contains('active');
+
+                // Toggle class 'active' pada <li> induk
+                bantuanMenuLi.classList.toggle('active');
+                
+                // Toggle display untuk submenu
+                bantuanSubmenu.style.display = isExpanded ? 'none' : 'block';
+
+                // Toggle icon
+                if (isExpanded) {
+                    bantuanIcon.classList.remove('fa-angle-up');
+                    bantuanIcon.classList.add('fa-angle-down');
+                } else {
+                    bantuanIcon.classList.remove('fa-angle-down');
+                    bantuanIcon.classList.add('fa-angle-up');
+                }
+            });
+
+            // =======================================================
+            // 2. Tombol Tampilkan Nol/Sembunyikan Nol (Tabel Demografi)
+            // =======================================================
+            const toggleNolBtn = document.getElementById('toggle-nol-btn');
+            const penerimaRow = document.querySelector('#tabel-demografi .penerima-row');
+
+            // Set state awal, karena di HTML sudah di-set 'hidden'
+            let isNolShown = false; // Awalnya baris nol disembunyikan
+
+            toggleNolBtn.addEventListener('click', function() {
+                if (isNolShown) {
+                    // Sembunyikan baris nol
+                    penerimaRow.classList.add('hidden');
+                    toggleNolBtn.textContent = 'Tampilkan Nol';
+                    isNolShown = false;
+                } else {
+                    // Tampilkan baris nol
+                    penerimaRow.classList.remove('hidden');
+                    toggleNolBtn.textContent = 'Sembunyikan Nol';
+                    isNolShown = true;
+                }
+            });
+            
+            // =======================================================
+            // 3. Tombol Tampilkan Semua Data (Tabel Bantuan)
+            // =======================================================
+            const toggleBantuanBtn = document.getElementById('toggle-bantuan-btn');
+            const extraDataRows = document.querySelectorAll('#tabel-bantuan .extra-data');
+            const initialRowCount = 3; 
+            const totalDataCount = initialRowCount + extraDataRows.length;
+            let isAllBantuanShown = false; // Awalnya hanya 3 baris yang tampil
+
+            // Tampilkan jumlah total data pada tombol saat inisialisasi
+            toggleBantuanBtn.textContent = `Tampilkan Semua Data (${totalDataCount})`;
+
+            // Sembunyikan data tambahan saat awal dimuat (sudah dilakukan di CSS, 
+            // tapi ini memastikan fungsionalitas tombol berjalan)
+            extraDataRows.forEach(row => row.style.display = 'none');
+
+
+            toggleBantuanBtn.addEventListener('click', function() {
+                if (isAllBantuanShown) {
+                    // Sembunyikan data tambahan
+                    extraDataRows.forEach(row => row.style.display = 'none');
+                    toggleBantuanBtn.textContent = `Tampilkan Semua Data (${totalDataCount})`;
+                    isAllBantuanShown = false;
+                } else {
+                    // Tampilkan semua data
+                    extraDataRows.forEach(row => row.style.display = 'table-row');
+                    toggleBantuanBtn.textContent = `Sembunyikan Data Tambahan`;
+                    isAllBantuanShown = true;
+                }
+            });
+            
+            // =======================================================
+            // 4. Simulasi Aktif Tombol Grafik
+            // =======================================================
+            const chartButtons = document.querySelectorAll('.chart-btn');
+
+            chartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Hapus kelas 'active' dari semua tombol
+                    chartButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Tambahkan kelas 'active' hanya pada tombol yang diklik
+                    this.classList.add('active');
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

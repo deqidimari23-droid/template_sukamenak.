@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaduan Warga - Desa Sukamenak</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Variabel Warna Utama (Disesuaikan dari Kode Anda) */
+        :root {
+            --color-primary: #17a2b8; /* Biru/Tosca Standard */
+            --color-secondary: #008080; /* Warna Hijau/Tosca Gelap untuk Navbar & Footer */
+            --color-dark-blue: #005666; /* Warna Latar Belakang Aktif Navbar */
+            --color-text: #333;
+            --color-light: #f8f9fa; 
+            --color-header-blue: #007aa3; 
+            --color-btn-submit: #17a2b8; /* Warna Biru primary untuk tombol cari/tabel */
+            --color-btn-pengaduan: #138496; /* Warna Biru Tosca gelap untuk Ajukan Pengaduan */
+        }
+
+        /* Tampilan Dasar */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-light);
+            color: var(--color-text);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* --- Header Atas (Top Bar) & Middle Header (Logo & Search) - Konsisten --- */
+        .top-header-bar { background-color: #008080; color: white; padding: 5px 0; font-size: 0.8em; display: flex; justify-content: space-between; }
+        .top-header-bar a { color: white; text-decoration: none; margin-left: 15px; }
+        .middle-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; background-color: white; }
+        .site-title { display: flex; align-items: center; }
+        .site-title h1 { font-size: 1.2em; font-weight: bold; color: var(--color-text); margin: 0; line-height: 1.2; }
+        .site-title p { font-size: 0.8em; color: #666; margin: 0; font-weight: normal; }
+        .search-box-penduduk { display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 250px; }
+        .search-box-penduduk input { border: none; padding: 8px 10px; flex-grow: 1; outline: none; }
+        .search-box-penduduk button { background-color: white; border: none; padding: 8px 12px; color: #666; cursor: pointer; }
+
+
+        /* --- Navigasi Utama (Main Navbar) - Konsisten --- */
+        .main-nav { background-color: var(--color-secondary); color: white; padding: 0; position: relative; z-index: 5; }
+        .main-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: flex-start; }
+        .main-nav ul li a { color: white; padding: 15px 15px; display: block; font-weight: normal; transition: background-color 0.3s; text-decoration: none; font-size: 0.95em; }
+        .main-nav ul li a:hover, .main-nav ul li.active a { background-color: var(--color-dark-blue); }
+        .main-nav ul li.home-link a { padding-left: 10px; padding-right: 10px; }
+
+
+        /* --- Konten Utama (Single Column Layout) --- */
+        .main-content-single-col {
+            padding: 30px 0;
+        }
+        .content-card-pengaduan {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Header Pengaduan */
+        .content-header-pengaduan {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--color-text);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Deskripsi Layanan */
+        .info-box-pengaduan {
+            background-color: #f8f9fa; /* Warna latar belakang abu-abu muda */
+            border-left: 5px solid var(--color-primary); /* Garis kiri biru/tosca */
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #495057;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* Form Aksi/Pencarian */
+        .action-bar-pengaduan {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .action-bar-pengaduan button {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+        
+        /* Tombol Ajukan Pengaduan */
+        .btn-ajukan-pengaduan {
+            background-color: var(--color-btn-pengaduan); /* Tosca Gelap */
+            color: white;
+        }
+        .btn-ajukan-pengaduan i { margin-right: 5px; }
+
+        /* Dropdown dan Input Pencarian */
+        .action-bar-pengaduan select,
+        .action-bar-pengaduan input[type="text"] {
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        .action-bar-pengaduan select {
+            width: 180px; /* Lebar standar untuk dropdown */
+        }
+        .action-bar-pengaduan input[type="text"] {
+            flex-grow: 1; /* Ambil sisa lebar */
+        }
+        
+        /* Tombol Cari */
+        .btn-cari-pengaduan {
+            background-color: var(--color-btn-submit); /* Biru Primary */
+            color: white;
+            padding: 8px 12px !important; 
+        }
+
+        /* Placeholder Data Tidak Tersedia (Sesuai Gambar) */
+        .data-not-available {
+            background-color: #428bca; /* Warna Biru terang */
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1em;
+            /* Tambahkan sedikit bayangan agar mirip */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        }
+
+        /* --- Footer Bawah Halaman (SAMA PERSIS DENGAN KODE ANDA) --- */
+        footer { background-color: var(--color-secondary); color: white; padding: 40px 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 30px; padding-bottom: 20px; }
+        .footer-grid h4 { color: #ffc107; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 5px; }
+        .contact-info p { margin: 5px 0; font-size: 0.9em; }
+        .contact-info i { width: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="top-header-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span>089678482349</span>
+                <a href="#">sukamenak@gmail.com</a>
+            </div>
+            <div class="contact-info">
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+    </div>
+
+    <header class="middle-header">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="site-title">
+                <img src="logo.png" alt="Logo Desa">
+                <div>
+                    <h1>SISTEM INFORMASI DESA SUKAMENAK</h1>
+                    <p>Kec. Banturujeg Kab. Majalengka</p>
+                </div>
+            </div>
+            <div class="search-box-penduduk">
+                <input type="text" placeholder="Cari..." aria-label="Cari di website desa">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li class="home-link"><a href="index.html"><i class="fas fa-home"></i></a></li>
+                <li><a href="penduduk.html">Penduduk</a></li>
+                <li><a href="galeri.html">Galeri</a></li>
+                <li><a href="program.html">Program</a></li>
+                <li><a href="kategori_berita.html">Berita Desa</a></li>
+                <li><a href="jdih.html">JDIH</a></li>
+                <li class="active"><a href="pengaduan.html">Pengaduan Warga</a></li>
+                 <li><a href="#">Pembangunan</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content-single-col">
+
+        <main class="content-card-pengaduan">
+            
+            <div class="content-header-pengaduan">
+                <i class="fas fa-envelope"></i> Pengaduan
+            </div>
+
+            <div class="info-box-pengaduan">
+                Layanan Pengaduan bagi warga Desa Sukamenak, Kecamatan Banturujeg, Kabupaten Majalengka yang ingin menyampaikan keluhan dan laporan terkait penyelenggaraan pemerintahan desa dan pelaksanaan pembangunan.
+            </div>
+
+            <div class="action-bar-pengaduan">
+                <button class="btn-ajukan-pengaduan">
+                    <i class="fas fa-plus-circle"></i> Ajukan Pengaduan
+                </button>
+                
+                <select name="status">
+                    <option value="all">Semua Status</option>
+                    <option value="new" selected>Menunggu Diproses</option>
+                    <option value="process">Sedang Diproses</option>
+                    <option value="done">Selesai</option>
+                </select>
+                
+                <input type="text" placeholder="Cari pengaduan disini...">
+                
+                <button class="btn-cari-pengaduan">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                <button style="background-color: #ffc107; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;"></button>
+            </div>
+
+            <div class="data-not-available">
+                Data tidak tersedia
+            </div>
+
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div style="display: flex; align-items: center;">
+                        <img src="logo.png" alt="Logo Desa" style="width: 30px; height: 30px; margin-right: 10px;">
+                        <div style="font-size: 1.5em; font-weight: bold;">DESA SUKAMENAK</div>
+                    </div>
+                    <p style="font-size: 0.9em;">Website Resmi Pemerintah Desa Sukamenak, Kecamatan Banturujeg, Kabupaten Majalengka</p>
+                </div>
+                
+                <div class="contact-info">
+                    <h4>HUBUNGI KAMI</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Kantor Desa Sukamenak, Banturujeg, Majalengka, Jawa Barat, 45464, Indonesia.</p>
+                    <p><i class="fas fa-phone"></i> Telepon/Fax: 089678482349</p>
+                    <p><i class="fas fa-mobile-alt"></i> No. HP: 089</p>
+                    <p><i class="fas fa-envelope"></i> Email: sukamenak@gmail.com</p>
+                </div>
+
+                <div>
+                    <h4><i class="fas fa-camera"></i> ALBUM GALERI</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+1" alt="Galeri 1" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+2" alt="Galeri 2" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+3" alt="Galeri 3" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+4" alt="Galeri 4" style="width: 100%; height: auto; border-radius: 3px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

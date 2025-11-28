@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penduduk - Demografi Berdasarkan Rentang Umur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Variabel Warna Utama */
+        :root {
+            --color-primary: #17a2b8; /* Biru/Tosca Standard untuk tombol "Tampilkan Nol" */
+            --color-secondary: #008080; /* Warna Hijau/Tosca Gelap untuk Navbar & Footer */
+            --color-dark-blue: #005666; 
+            --color-text: #333;
+            --color-light: #f8f9fa; 
+            --color-sidebar: #f8f9fa; 
+            --color-header-table: #3F4750; /* Abu-abu tua kebiruan gelap (Presisi Header Tabel) */
+            --color-header-blue: #007aa3; /* Biru tua untuk header utama Sidebar */
+            --color-btn-selengkapnya: #6c757d; /* Warna abu-abu untuk tombol "Selengkapnya" */
+        }
+
+        /* Tampilan Dasar */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-light);
+            color: var(--color-text);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* --- Header Atas (Top Bar) --- */
+        .top-header-bar {
+            background-color: #008080; 
+            color: white;
+            padding: 5px 0;
+            font-size: 0.8em;
+            display: flex;
+            justify-content: space-between;
+        }
+        .top-header-bar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .top-header-bar .contact-info {
+            display: flex;
+            align-items: center;
+        }
+        .top-header-bar .contact-info i { margin-right: 5px; }
+
+        /* --- Header Logo & Search (Middle Bar) --- */
+        .middle-header {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 15px 0;
+            background-color: white;
+        }
+        .site-title {
+            display: flex;
+            align-items: center;
+        }
+        .site-title img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .site-title h1 {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--color-text);
+            margin: 0;
+            line-height: 1.2;
+        }
+        .site-title p {
+            font-size: 0.8em;
+            color: #666;
+            margin: 0;
+            font-weight: normal;
+        }
+        .search-box-penduduk {
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 250px;
+        }
+        .search-box-penduduk input {
+            border: none;
+            padding: 8px 10px;
+            flex-grow: 1;
+            outline: none;
+        }
+        .search-box-penduduk button {
+            background-color: white;
+            border: none;
+            padding: 8px 12px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* --- Navigasi Utama (Main Navbar) --- */
+        .main-nav { 
+            background-color: var(--color-secondary); 
+            color: white; 
+            padding: 0; 
+            position: relative; 
+            z-index: 5; 
+        }
+        .main-nav ul { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+            display: flex; 
+            justify-content: flex-start; 
+        }
+        .main-nav ul li a { 
+            color: white; 
+            padding: 15px 15px; 
+            display: block; 
+            font-weight: normal; 
+            transition: background-color 0.3s; 
+            text-decoration: none; 
+            font-size: 0.95em;
+        }
+        .main-nav ul li a:hover, .main-nav ul li.active a { 
+            background-color: var(--color-dark-blue); 
+        }
+
+        /* --- Konten Utama (Grid Sidebar dan Tabel) --- */
+        .main-content-grid-penduduk {
+            display: grid;
+            grid-template-columns: 280px 1fr; 
+            gap: 20px;
+            padding: 30px 0;
+        }
+
+        /* --- Sidebar Statistik Penduduk --- */
+        .sidebar {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            height: fit-content;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .sidebar-header {
+            background-color: var(--color-header-blue);
+            color: white;
+            padding: 12px 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-bottom: 2px solid #005666;
+        }
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            border-bottom: 1px solid #eee;
+        }
+        .sidebar-menu li a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--color-text);
+            transition: background-color 0.2s;
+            font-size: 0.95em;
+        }
+        .sidebar-menu li a:hover {
+            background-color: #f0f0f0;
+            color: var(--color-primary);
+        }
+        .sidebar-menu li.active a {
+            background-color: #e9ecef;
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        /* --- Konten Utama (Area Tabel) --- */
+        .content-area {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Subheader Konten */
+        .content-header {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chart-buttons button {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin-left: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s, transform 0.1s; /* Tambahkan transisi untuk efek hover */
+        }
+        .chart-buttons button:hover {
+            background-color: var(--color-dark-blue);
+            transform: translateY(-1px);
+        }
+
+        /* --- Tabel Demografi (Presisi 100%) --- */
+        .demografi-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 15px;
+            border: 1px solid #dee2e6; 
+        }
+
+        .demografi-table th, .demografi-table td {
+            padding: 10px 12px;
+            border: 1px solid #dee2e6; 
+            text-align: left;
+            vertical-align: middle;
+            transition: background-color 0.2s; /* Transisi untuk hover body tabel */
+        }
+        
+        /* EFEK HOVER BARIS TABEL (Body) */
+        .demografi-table tbody tr:not(.total-row):not(.belum-mengisi-row):hover {
+            background-color: #e0f7fa !important; /* Warna biru muda saat hover */
+            cursor: pointer;
+        }
+        /* Jaga agar total row tidak berubah warna saat dihover */
+        .demografi-table tbody tr.total-row:hover,
+        .demografi-table tbody tr.belum-mengisi-row:hover {
+            cursor: default;
+        }
+
+
+        /* KOREKSI PRESISI FINAL HEADER TABEL */
+        .demografi-table thead tr:first-child th {
+            background-color: var(--color-header-table); 
+            color: white;
+            text-align: center;
+            font-weight: bold; 
+            border: 1px solid var(--color-header-table); 
+            border-right: 2px solid white !important; 
+        }
+        .demografi-table thead tr:first-child th:last-child {
+            border-right: 1px solid var(--color-header-table) !important; 
+        }
+
+        .demografi-table thead tr:nth-child(2) th {
+            background-color: var(--color-header-table); 
+            color: white;
+            font-weight: bold; 
+            text-align: center;
+            border: 1px solid var(--color-header-table); 
+        }
+        .demografi-table thead tr:nth-child(2) th:nth-child(odd) {
+             border-right: 2px solid white; 
+        }
+        .demografi-table thead tr:nth-child(2) th:last-child {
+            border-right: 1px solid var(--color-header-table); 
+        }
+
+        /* Kolom di body tabel */
+        .demografi-table th:nth-child(1), 
+        .demografi-table td:nth-child(1) { text-align: center; width: 5%; }
+        .demografi-table th:nth-child(2) { width: 30%; text-align: left; }
+        
+        /* Background abu-abu muda di kolom Persentase */
+        .demografi-table td:nth-child(3), 
+        .demografi-table td:nth-child(5),
+        .demografi-table td:nth-child(7) {
+            background-color: #f2f2f2; 
+            width: 8%;
+        }
+        
+        /* Baris Total */
+        .demografi-table tbody tr.total-row td {
+            font-weight: bold;
+            background-color: #e9ecef !important;
+        }
+        /* Baris Belum Mengisi */
+        .demografi-table tbody tr.belum-mengisi-row td {
+            background-color: #fff3cd; 
+        }
+
+        /* Kelas untuk baris yang disembunyikan */
+        .demografi-table tr.hidden {
+            display: none;
+        }
+
+        /* --- Footer Tombol Tabel (Presisi 100%) --- */
+        .table-footer-buttons {
+            display: flex;
+            justify-content: flex-end; 
+            align-items: center; 
+            margin-top: 20px;
+            padding-right: 1px;
+        }
+        .table-footer-buttons p {
+            margin-right: auto; 
+            font-size: 0.8em; 
+            color: #999;
+        }
+        .table-footer-buttons button {
+            transition: background-color 0.2s, transform 0.1s; /* Transisi untuk tombol footer */
+        }
+        .table-footer-buttons .btn-selengkapnya {
+            background-color: var(--color-btn-selengkapnya); 
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin-right: 10px;
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .table-footer-buttons .btn-selengkapnya:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+        }
+        .table-footer-buttons .btn-tampilkan-nol {
+            background-color: var(--color-primary); 
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .table-footer-buttons .btn-tampilkan-nol:hover {
+            background-color: var(--color-dark-blue);
+            transform: translateY(-1px);
+        }
+
+
+        /* --- Footer Bawah Halaman --- */
+        footer { background-color: var(--color-secondary); color: white; padding: 40px 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 30px; padding-bottom: 20px; }
+        .footer-grid h4 { color: #ffc107; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 5px; }
+        .contact-info p { margin: 5px 0; font-size: 0.9em; }
+        .contact-info i { width: 20px; text-align: center; }
+    </style>
+    </head>
+<body>
+
+    <div class="top-header-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span>089678482349</span>
+                <a href="#">sukamenak@gmail.com</a>
+            </div>
+            <div class="contact-info">
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+    </div>
+
+    <header class="middle-header">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="site-title">
+                <img src="logodesa.jpg" alt="Logo Desa">
+                <div>
+                    <h1>SISTEM INFORMASI DESA SUKAMENAK</h1>
+                    <p>Kec. Banturujeg Kab. Majalengka</p>
+                </div>
+            </div>
+            <div class="search-box-penduduk">
+                <input type="text" placeholder="Cari..." aria-label="Cari di website desa">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li class="home-link"><a href="index.html"><i class="fas fa-home"></i></a></li>
+                <li class="active"><a href="#">Penduduk</a></li>
+                <li><a href="galeri.html">Galeri</a></li>
+                <li><a href="program.html">Program</a></li>
+                <li><a href="kategori_berita.html">Berita Desa</a></li>
+                <li><a href="jdih.html">JDIH</a></li>
+                <li><a href="pengaduan.html">Pengaduan Warga</a></li>
+                <li><a href="#">Pembangunan</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content-grid-penduduk">
+
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-chart-bar"></i> Statistik Penduduk
+            </div>
+            <nav class="sidebar-menu">
+                <ul>
+                    <li class="active"><a href="#">Rentang Umur <i class="fas fa-angle-up"></i></a></li>
+                    <li><a href="#">Statistik Keluarga <i class="fas fa-angle-down"></i></a></li>
+                    <li><a href="#">Statistik Bantuan <i class="fas fa-angle-down"></i></a></li>
+                    <li><a href="#">Statistik Lainnya <i class="fas fa-angle-down"></i></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <div class="content-header">
+                <h2>Demografi Berdasarkan Rentang Umur</h2>
+                <div class="chart-buttons">
+                    <button id="btn-bar-graph">Bar Graph</button>
+                    <button id="btn-pie-graph">Pie Graph</button>
+                </div>
+            </div>
+
+            <div class="demografi-table">
+                <h3>Tabel Demografi Berdasarkan Rentang Umur</h3>
+                <table id="demografi-table-umur">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">No</th>
+                            <th rowspan="2">Kelompok</th>
+                            <th colspan="2">Jumlah</th>
+                            <th colspan="2">Laki-laki</th>
+                            <th colspan="2">Perempuan</th>
+                        </tr>
+                        <tr>
+                            <th>n</th>
+                            <th>%</th>
+                            <th>n</th>
+                            <th>%</th>
+                            <th>n</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="data-row"><td>1</td><td>Di bawah 1 Tahun</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td></tr>
+                        <tr class="data-row"><td>2</td><td>1 s/d 4 Tahun</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td></tr>
+                        <tr class="data-row"><td>3</td><td>5 s/d 9 Tahun</td><td>16</td><td>0,43%</td><td>8</td><td>0,21%</td><td>8</td><td>0,21%</td></tr>
+                        <tr class="data-row"><td>4</td><td>10 s/d 14 Tahun</td><td>109</td><td>2,91%</td><td>47</td><td>1,25%</td><td>62</td><td>1,65%</td></tr>
+                        <tr class="data-row"><td>5</td><td>15 s/d 19 Tahun</td><td>120</td><td>3,20%</td><td>72</td><td>1,92%</td><td>48</td><td>1,28%</td></tr>
+                        <tr class="data-row"><td>6</td><td>20 s/d 24 Tahun</td><td>118</td><td>3,15%</td><td>64</td><td>1,71%</td><td>54</td><td>1,44%</td></tr>
+                        <tr class="data-row"><td>7</td><td>25 s/d 29 Tahun</td><td>131</td><td>3,49%</td><td>65</td><td>1,73%</td><td>66</td><td>1,76%</td></tr>
+                        <tr class="data-row"><td>8</td><td>30 s/d 34 Tahun</td><td>113</td><td>3,01%</td><td>54</td><td>1,44%</td><td>59</td><td>1,57%</td></tr>
+                        <tr class="data-row"><td>9</td><td>35 s/d 39 Tahun</td><td>158</td><td>4,21%</td><td>72</td><td>1,92%</td><td>86</td><td>2,29%</td></tr>
+                        <tr class="data-row"><td>10</td><td>40 s/d 44 Tahun</td><td>180</td><td>4,80%</td><td>79</td><td>2,11%</td><td>101</td><td>2,69%</td></tr>
+                        <tr class="data-row"><td>11</td><td>45 s/d 49 Tahun</td><td>211</td><td>5,63%</td><td>109</td><td>2,91%</td><td>102</td><td>2,72%</td></tr>
+                        <tr class="data-row"><td>12</td><td>50 s/d 54 Tahun</td><td>213</td><td>5,68%</td><td>105</td><td>2,80%</td><td>108</td><td>2,88%</td></tr>
+                        <tr class="data-row"><td>13</td><td>55 s/d 59 Tahun</td><td>1781</td><td>47,48%</td><td>903</td><td>24,07%</td><td>878</td><td>23,41%</td></tr>
+                        <tr class="data-row"><td>14</td><td>60 s/d 64 Tahun</td><td>148</td><td>3,95%</td><td>82</td><td>2,19%</td><td>66</td><td>1,76%</td></tr>
+                        <tr class="data-row"><td>15</td><td>65 s/d 69 Tahun</td><td>121</td><td>3,23%</td><td>62</td><td>1,65%</td><td>59</td><td>1,57%</td></tr>
+                        <tr class="data-row"><td>16</td><td>70 s/d 74 Tahun</td><td>107</td><td>2,85%</td><td>57</td><td>1,52%</td><td>50</td><td>1,33%</td></tr>
+                        <tr class="data-row"><td>17</td><td>75 Tahun ke Atas</td><td>225</td><td>6,00%</td><td>116</td><td>3,09%</td><td>109</td><td>2,91%</td></tr>
+                        
+                        <tr class="total-row"><td></td><td>JUMLAH</td><td>3751</td><td>100,00%</td><td>1895</td><td>50,52%</td><td>1856</td><td>49,48%</td></tr>
+                        
+                        <tr class="belum-mengisi-row data-row"><td></td><td>BELUM MENGISI</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td><td>0</td><td>0,00%</td></tr>
+                        
+                        <tr class="total-row"><td></td><td>TOTAL</td><td>3751</td><td>100,00%</td><td>1895</td><td>50,52%</td><td>1856</td><td>49,48%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer-buttons">
+                <p>Diperbarui pada: 06 Oktober 2025</p>
+                <button class="btn-selengkapnya">Selengkapnya...</button>
+                <button class="btn-tampilkan-nol" id="btn-toggle-nol" data-tampil="tidak">Tampilkan Nol</button>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div style="display: flex; align-items: center;">
+                        <img src="logo.png" alt="Logo Desa" style="width: 30px; height: 30px; margin-right: 10px;">
+                        <div style="font-size: 1.5em; font-weight: bold;">DESA SUKAMENAK</div>
+                    </div>
+                    <p style="font-size: 0.9em;">Website Resmi Pemerintah Desa Sukamenak, Kecamatan Banturujeg, Kabupaten Majalengka</p>
+                </div>
+                
+                <div class="contact-info">
+                    <h4>HUBUNGI KAMI</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Kantor Desa Sukamenak, Banturujeg, Majalengka, Jawa Barat, 45464, Indonesia.</p>
+                    <p><i class="fas fa-phone"></i> Telepon/Fax: 089678482349</p>
+                    <p><i class="fas fa-mobile-alt"></i> No. HP: 089</p>
+                    <p><i class="fas fa-envelope"></i> Email: sukamenak@gmail.com</p>
+                </div>
+
+                <div>
+                    <h4><i class="fas fa-camera"></i> ALBUM GALERI</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+1" alt="Galeri 1" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+2" alt="Galeri 2" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+3" alt="Galeri 3" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+4" alt="Galeri 4" style="width: 100%; height: auto; border-radius: 3px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mengambil referensi elemen
+            const tableBody = document.querySelector('#demografi-table-umur tbody');
+            const btnToggleNol = document.getElementById('btn-toggle-nol');
+            const dataRows = tableBody.querySelectorAll('tr.data-row');
+            
+            // --- 1. Fungsi Tampilkan/Sembunyikan Baris Nol ---
+            
+            function toggleNolRows() {
+                const isShowing = btnToggleNol.getAttribute('data-tampil') === 'ya';
+
+                dataRows.forEach(row => {
+                    // Ambil nilai kolom 'Jumlah' (kolom ke-3, indeks 2)
+                    const jumlahCell = row.cells[2];
+                    const jumlah = parseInt(jumlahCell.textContent.trim());
+
+                    // Jika jumlah 0
+                    if (jumlah === 0) {
+                        if (isShowing) {
+                            // Jika tombol menunjukkan "Sembunyikan Nol", maka sembunyikan baris nol
+                            row.classList.add('hidden');
+                        } else {
+                            // Jika tombol menunjukkan "Tampilkan Nol", maka tampilkan baris nol
+                            row.classList.remove('hidden');
+                        }
+                    }
+                });
+
+                // Update teks tombol dan status
+                if (isShowing) {
+                    btnToggleNol.textContent = 'Tampilkan Nol';
+                    btnToggleNol.setAttribute('data-tampil', 'tidak');
+                } else {
+                    btnToggleNol.textContent = 'Sembunyikan Nol';
+                    btnToggleNol.setAttribute('data-tampil', 'ya');
+                }
+            }
+
+            // Awalnya, sembunyikan baris nol saat halaman dimuat
+            // Kita harus memanggil fungsi ini sekali saat load, tetapi membalik logikanya.
+            // Atau cukup ubah status tombol menjadi 'ya' lalu panggil toggleNolRows
+            btnToggleNol.setAttribute('data-tampil', 'ya'); // Set status awal agar toggle pertama menyembunyikan
+            toggleNolRows(); // Panggil pertama kali untuk menyembunyikan
+
+            // Event listener untuk tombol Tampilkan/Sembunyikan Nol
+            btnToggleNol.addEventListener('click', toggleNolRows);
+            
+            // --- 2. Fungsi Simulasi Tombol Grafik & Selengkapnya ---
+            const btnBarGraph = document.getElementById('btn-bar-graph');
+            const btnPieGraph = document.getElementById('btn-pie-graph');
+            const btnSelengkapnya = document.querySelector('.btn-selengkapnya');
+            
+            btnBarGraph.addEventListener('click', function() {
+                alert('Tampilan Bar Graph Demografi sedang dimuat...');
+            });
+            
+            btnPieGraph.addEventListener('click', function() {
+                alert('Tampilan Pie Graph Demografi sedang dimuat...');
+            });
+            
+            btnSelengkapnya.addEventListener('click', function() {
+                alert('Mengarahkan ke halaman detail statistik penduduk...');
+            });
+            
+            // --- 3. Efek Fokus/Highlight Sidebar (Simulasi Navigasi Dinamis) ---
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu li a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Hapus kelas 'active' dari semua link
+                    sidebarLinks.forEach(l => l.parentElement.classList.remove('active'));
+                    
+                    // Tambahkan kelas 'active' ke link yang diklik
+                    this.parentElement.classList.add('active');
+                    
+                    const statName = this.textContent.trim().replace(/\s+([A-Z][a-z]+)$/, ''); // Hapus ikon dari teks
+                    alert(`Anda telah memilih: ${statName}. Konten akan dimuat di sini.`);
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

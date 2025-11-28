@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Galeri - Desa Sukamenak</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Variabel Warna Utama (Sesuai OpenSID) */
+        :root {
+            --color-secondary: #008080; /* Tosca Gelap untuk Navbar & Layanan Mandiri */
+            --color-dark-blue: #005666; 
+            --color-text: #333;
+            --color-light: #f8f9fa; 
+            --color-border-main: #e0e0e0; 
+            --color-sidebar-header: #008CBA; /* Biru Header Sidebar */
+            --color-button-orange: #F89406; /* Tombol Masuk */
+            --color-button-red: #dc3545; /* Tombol Rekam Kehadiran */
+            --color-ribbon-yellow: #ffc107; /* Pita Aparatur */
+            --color-primary: #17a2b8; /* Tambahan untuk tab aktif */
+        }
+
+        /* Tampilan Dasar */
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--color-light); 
+            color: var(--color-text); 
+        }
+        .container { 
+            width: 90%; 
+            max-width: 1200px; 
+            margin: auto; 
+        }
+
+        /* --- Header dan Navigasi (CSS Lengkap seperti sebelumnya) --- */
+        .top-header-bar { background-color: var(--color-secondary); color: white; padding: 5px 0; font-size: 0.8em; }
+        .top-header-bar .container { display: flex; justify-content: space-between; }
+        .top-header-bar a { color: white; text-decoration: none; margin-left: 15px;}
+        .middle-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; background-color: white; }
+        .site-title { display: flex; align-items: center; }
+        .site-title h1 { font-size: 1.2em; margin: 0; line-height: 1.2; color: #333; }
+        .site-title p { font-size: 0.8em; margin: 0; color: #666; }
+        .search-box-header { display: flex; border: 1px solid #ccc; border-radius: 4px; width: 250px; overflow: hidden; background-color: #fff; }
+        .search-box-header input { border: none; padding: 8px 10px; flex-grow: 1; outline: none; font-size: 0.9em; }
+        .search-box-header button { background-color: #f1f1f1; border: none; padding: 8px 12px; color: #666; cursor: pointer; }
+        .main-nav { background-color: var(--color-secondary); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        .main-nav ul { list-style: none; display: flex; padding: 0; margin: 0; }
+        .main-nav ul li a { color: white; padding: 12px 15px; display: block; text-decoration: none; font-size: 0.9em; transition: background-color 0.2s; }
+        .main-nav ul li a:hover, .main-nav ul li.active a { background-color: var(--color-dark-blue); }
+
+        /* --- GRID UTAMA HALAMAN --- */
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.3fr; /* Konten Utama vs Sidebar */
+            gap: 20px;
+            padding: 30px 0;
+            /* *** KUNCI 1: Meregangkan elemen anak untuk mengisi tinggi kontainer grid *** */
+            align-items: stretch; 
+        }
+        
+        /* --- KONTEN UTAMA (KIRI) - Album Galeri --- */
+        .content-area-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; 
+            /* *** KUNCI 2: Memastikan elemen ini menggunakan tinggi yang di-stretch oleh grid container *** */
+            height: 100%; 
+        }
+        .content-block {
+            background-color: white;
+            border: 1px solid var(--color-border-main);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            /* *** KUNCI 3: Memaksa blok tunggal mengambil sisa ruang yang tersedia di kolom kiri *** */
+            flex-grow: 1;
+        }
+        
+        /* Style Album Galeri */
+        .album-header {
+            font-size: 1.5em; 
+            margin: 0; 
+            padding: 15px; 
+            border-bottom: 1px dotted #ddd; 
+            color: #555;
+            font-weight: bold;
+        }
+        .album-content-body {
+            padding: 15px;
+            color: #666;
+            /* *** KUNCI 4: Memastikan konten di dalam .album-content-body bisa mengisi sisa ruang yang dipanjangkan oleh flex-grow: 1 (jika perlu) *** */
+            height: 100%;
+        }
+
+        /* --- SIDEBAR KANAN (CSS Lengkap seperti sebelumnya) --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; 
+        }
+        .sidebar-block { border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); background-color: white; border: 1px solid var(--color-border-main); }
+        .sidebar-header { background-color: var(--color-sidebar-header); color: white; padding: 12px 15px; margin: 0; font-size: 1.05em; font-weight: bold; position: relative; }
+        .sidebar-header i { margin-right: 8px; }
+        .sidebar-header::after { content: ''; position: absolute; bottom: -15px; left: 15px; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 15px solid var(--color-sidebar-header); }
+        .sidebar-content { padding: 15px; padding-top: 30px; background-color: white; }
+
+        /* BLOK 1: LAYANAN MANDIRI */
+        .layanan-mandiri { background-color: var(--color-secondary); border: none; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        .layanan-mandiri .sidebar-header { background-color: transparent; padding-top: 25px; text-align: center; font-size: 1.2em; font-weight: bold; padding-bottom: 0; }
+        .layanan-mandiri .sidebar-header::after { content: none; }
+        .layanan-mandiri .sidebar-content { padding: 10px 20px 20px 20px; background-color: transparent; color: white; }
+        .layanan-mandiri label { display: block; font-size: 0.9em; margin-bottom: 5px; font-weight: bold; }
+        .layanan-mandiri input { width: 100%; padding: 12px; margin-bottom: 15px; border: none; border-radius: 4px; box-sizing: border-box; color: #333; }
+        .layanan-mandiri .info-pin { display: flex; align-items: center; font-size: 0.8em; color: #333; margin-bottom: 20px; padding: 10px 10px; background-color: white; border-radius: 4px; font-weight: bold; }
+        .layanan-mandiri .info-pin i { color: var(--color-secondary); margin-right: 8px; font-size: 1.1em; }
+        .layanan-mandiri button { background-color: var(--color-button-orange); color: white; width: 100%; padding: 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1.1em; }
+
+        /* BLOK PETA */
+        .peta-desa-block .sidebar-content { padding: 0; padding-top: 30px; }
+        .map-container-google { height: 200px; background-color: #e5e3df; position: relative; overflow: hidden; }
+        .map-container-google .view-larger { position: absolute; top: 5px; left: 5px; background: white; padding: 5px 10px; border-radius: 3px; font-size: 0.8em; color: #007bff; text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: bold; z-index: 10; }
+        .map-container-google .google-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; padding: 3px; font-size: 0.6em; text-align: center; z-index: 10; }
+
+        /* BLOK KATEGORI */
+        .kategori .sidebar-content { padding: 5px 15px; padding-top: 25px; }
+        .kategori ul { list-style: square; padding: 0 0 0 20px; margin: 0; }
+        .kategori li { padding: 5px 0; font-size: 0.95em; }
+        .kategori li a { color: var(--color-text); text-decoration: none; }
+
+        /* BLOK ARSIP ARTIKEL */
+        .arsip-artikel-block .sidebar-content { padding: 0; padding-top: 30px; }
+        .arsip-artikel-tabs { display: flex; border-bottom: 1px solid #ddd; }
+        .arsip-artikel-tabs button { flex: 1; padding: 10px 5px; border: none; border-bottom: 2px solid transparent; background-color: transparent; cursor: pointer; font-weight: bold; color: #666; font-size: 0.9em; }
+        .arsip-artikel-tabs button.active { border-bottom-color: var(--color-primary); color: var(--color-primary); }
+        .arsip-artikel-list { padding: 15px; max-height: 250px; overflow-y: scroll; } 
+        .artikel-item { display: flex; margin-bottom: 15px; align-items: flex-start; text-decoration: none; color: #333; }
+        .artikel-item-thumb { min-width: 50px; height: 50px; margin-right: 10px; border-radius: 3px; flex-shrink: 0; background-size: cover; background-position: center; }
+        .artikel-item-text { font-size: 0.9em; line-height: 1.3; }
+        .artikel-item-text strong { font-weight: bold; color: var(--color-text); text-decoration: none; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .artikel-item-text span { color: #888; font-size: 0.8em; font-weight: normal; display: block; margin-top: 3px; }
+
+        /* BLOK APARATUR */
+        .aparatur-sidebar { background-color: var(--color-sidebar-header); color: white; padding: 30px 20px; border-radius: 4px; position: relative; text-align: center; border: none; }
+        .aparatur-sidebar .aparatur-ribbon { position: absolute; top: 0; left: 0; transform: rotate(-45deg) translate(-25px, 0); background-color: var(--color-ribbon-yellow); color: var(--color-text); padding: 2px 25px; font-size: 0.75em; font-weight: bold; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); z-index: 10; }
+        .aparatur-sidebar .image-box { width: 100px; height: 100px; margin: auto; background-color: white; padding: 10px; border-radius: 4px; margin-bottom: 10px; }
+        .aparatur-sidebar .image-box img { width: 100%; height: 100%; object-fit: contain; }
+        .aparatur-sidebar h3 { font-size: 1.2em; margin: 5px 0 0 0; }
+        .aparatur-sidebar p { font-size: 0.9em; margin: 0 0 15px 0; }
+        .aparatur-sidebar button { background-color: var(--color-button-red); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9em; }
+
+        /* BLOK WILAYAH DESA */
+        .wilayah-desa-block .sidebar-content { padding: 15px; padding-top: 30px; }
+        .wilayah-desa-block .map-container { height: 180px; border: 1px solid #ccc; margin-bottom: 10px; background-color: #e5e3df; position: relative; }
+        .wilayah-desa-block .map-overlay { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; background-color: rgba(128, 0, 128, 0.2); border: 2px solid red; z-index: 5; display: flex; align-items: center; justify-content: center; color: #555; font-weight: bold; }
+        .wilayah-desa-block p { font-size: 0.9em; margin: 0; color: #555; }
+
+        /* BLOK LOKASI KANTOR DESA */
+        .lokasi-kantor-sidebar-block .sidebar-content { padding: 15px; padding-top: 30px; }
+        .lokasi-kantor-sidebar-block .map-container { height: 180px; border: 1px solid #ccc; margin-bottom: 15px; background-color: #e5e3df; position: relative; }
+        .lokasi-kantor-sidebar-block .action-buttons { display: flex; gap: 10px; }
+        .lokasi-kantor-sidebar-block .action-buttons button { flex: 1; padding: 10px; border: 1px solid #aaa; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .lokasi-kantor-sidebar-block .action-buttons .buka-peta { background-color: #f89406; color: white; border-color: #d17e00; }
+        .lokasi-kantor-sidebar-block .action-buttons .detail { background-color: #fff; color: #333; border-color: #ccc; }
+
+        /* BLOK STATISTIK PENGUNJUNG */
+        .statistik-pengunjung-block .sidebar-content { padding-top: 25px; }
+        .statistik-pengunjung table { width: 100%; font-size: 0.95em; color: #555; border-collapse: collapse; }
+        .statistik-pengunjung td { padding: 3px 0; vertical-align: top; }
+        .statistik-pengunjung td:nth-child(2) { padding: 3px 5px; } 
+        .statistik-pengunjung td:last-child { font-weight: bold; color: var(--color-text); }
+
+         /* --- Footer Bawah Halaman --- */
+        footer { background-color: var(--color-secondary); color: white; padding: 40px 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 30px; padding-bottom: 20px; }
+        .footer-grid h4 { color: #ffc107; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 5px; }
+        .contact-info p { margin: 5px 0; font-size: 0.9em; }
+        .contact-info i { width: 20px; text-align: center; }
+
+    </style>
+</head>
+<body>
+
+    <div class="top-header-bar">
+        <div class="container">
+            <div><span>089678482349</span> <a href="#">sukamenak@gmail.com</a></div>
+            <div><i class="fas fa-moon"></i></div>
+        </div>
+    </div>
+    
+    <header class="middle-header">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="site-title">
+                <img src="logodesa.jpg" alt="Logo Desa" style="width: 50px; height: 50px; margin-right: 15px;">
+                <div>
+                    <h1>SISTEM INFORMASI DESA SUKAMENAK</h1>
+                    <p>Kec. Banturujeg Kab. Majalengka</p>
+                </div>
+            </div>
+            <div class="search-box-header">
+                <input type="text" placeholder="Cari..." aria-label="Cari di website desa">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li class="home-link"><a href="index.html"><i class="fas fa-home"></i></a></li>
+                <li><a href="penduduk.html">Penduduk</a></li>
+                <li class="active"><a href="#">Galeri</a></li>
+                <li><a href="program.html">Program</a></li>
+                <li><a href="kategori_berita.html">Berita Desa</a></li>
+                <li><a href="jdih.html">JDIH</a></li>
+                <li><a href="pengaduan.html">Pengaduan Warga</a></li>
+                <li><a href="#">Pembangunan</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container main-content-grid">
+
+        <main class="content-area-main">
+            
+            <div class="content-block">
+                 <h2 class="album-header">Album Galeri</h2>
+                 <div class="album-content-body">
+                    <p style="font-style: italic; color: #888;">Data tidak tersedia</p>
+                 </div>
+            </div>
+
+        </main>
+
+        <aside class="sidebar">
+            
+            <div class="layanan-mandiri">
+                <div class="sidebar-header">Layanan Mandiri</div>
+                <div class="sidebar-content">
+                    <div class="info-pin"><i class="fas fa-info-circle"></i> Hubungi operator desa untuk memperoleh PIN</div>
+                    <label for="nik-ktp">NIK / No. KTP</label><input type="text" id="nik-ktp" placeholder="">
+                    <label for="kode-pin">Kode PIN</label><input type="password" id="kode-pin" placeholder="">
+                    <button>Masuk</button>
+                </div>
+            </div>
+
+            <div class="sidebar-block peta-desa-block">
+                <div class="sidebar-header"><i class="fas fa-map"></i> Peta Desa</div>
+                <div class="sidebar-content" style="padding: 0;">
+                    <div class="map-container-google">
+                        <a href="#" class="view-larger">View larger map</a>
+                        <i class="fas fa-map-marker-alt" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -100%); font-size: 30px; color: #dc3545; z-index: 9;"></i>
+                        <div style="position: absolute; top: 40%; left: 55%; color: #333; font-weight: bold; font-size: 0.9em; z-index: 9;">Kepala Desa Logandu</div>
+                        <div class="google-label">Google</div>
+                        <div style="position: absolute; bottom: 3px; right: 5px; font-size: 0.6em; color: white; z-index: 11;"><a href="#" style="color: #aaa; margin-left: 5px; text-decoration: none;">Keyboard shortcuts</a> | <a href="#" style="color: #aaa; margin-left: 5px; text-decoration: none;">Map Data</a> | <a href="#" style="color: #aaa; margin-left: 5px; text-decoration: none;">Terms</a> | <a href="#" style="color: #aaa; margin-left: 5px; text-decoration: none;">Report a map error</a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-block kategori">
+                <div class="sidebar-header"><i class="fas fa-list"></i> Kategori</div>
+                <div class="sidebar-content">
+                    <ul>
+                        <li><a href="#">Berita Desa</a></li>
+                        <li><a href="#">Pemerintah Majalengka</a></li>
+                        <li><a href="#">Kriminal</a></li>
+                        <li><a href="#">Politik</a></li>
+                        <li><a href="#">Wisata</a></li>
+                        <li><a href="#">Teknologi</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="sidebar-block statistik-desa-sidebar-block">
+                <div class="sidebar-header"><i class="fas fa-chart-pie"></i> Statistik Desa Sukamenak</div>
+                <div class="sidebar-content">
+                    <div style="height: 150px; background-color: #f1f1f1; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #999;">[Grafik Pie Statistik Penduduk]</div>
+                </div>
+            </div>
+
+            <div class="sidebar-block arsip-artikel-block">
+                <div class="sidebar-header"><i class="fas fa-folder-open"></i> Arsip Artikel</div>
+                <div class="sidebar-content" style="padding: 0;">
+                    <div class="arsip-artikel-tabs">
+                        <button class="active">Terkini</button>
+                        <button>Populer</button>
+                        <button>Acak</button>
+                    </div>
+                    <div class="arsip-artikel-list">
+                        <a href="#" class="artikel-item">
+                             <div class="artikel-item-thumb" style="background-image: url('placeholder_image_1.png'); background-color: #A9D18E;"></div>
+                            <div class="artikel-item-text">
+                                <strong>Berita dan Pengumuman Desa Sukamenak Majalengka: Informasi Terbaru untuk Warga</strong>
+                                <span>21 Oktober 2025</span>
+                            </div>
+                        </a>
+                        <a href="#" class="artikel-item">
+                            <div class="artikel-item-thumb" style="background-image: url('placeholder_image_2.png'); background-color: #B4C6E7;"></div>
+                            <div class="artikel-item-text">
+                                <strong>Sukamenak Bangkit: Potensi Alam dan Inovasi Digital Mendorong Desa Mandiri di Majalengka</strong>
+                                <span>20 Oktober 2025</span>
+                            </div>
+                        </a>
+                        <a href="#" class="artikel-item">
+                            <div class="artikel-item-thumb" style="background-image: url('placeholder_image_3.png'); background-color: #FFE699;"></div>
+                            <div class="artikel-item-text">
+                                <strong>Informasi dan Layanan Desa: Panduan Lengkap Pelayanan Publik dan Administrasi Desa</strong>
+                                <span>20 Oktober 2025</span>
+                            </div>
+                        </a>
+                        <a href="#" class="artikel-item">
+                            <div class="artikel-item-thumb" style="background-color: #FFC0CB;"></div>
+                            <div class="artikel-item-text">
+                                <strong>Panen Raya Padi di Sukamenak Tingkatkan Ketahanan Pangan Lokal.</strong>
+                                <span>18 Oktober 2025</span>
+                            </div>
+                        </a>
+                        <a href="#" class="artikel-item">
+                            <div class="artikel-item-thumb" style="background-color: #ADD8E6;"></div>
+                            <div class="artikel-item-text">
+                                <strong>Pelatihan Komputer untuk Remaja Desa Dukung Digitalisasi.</strong>
+                                <span>15 Oktober 2025</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-block agenda-block">
+                <div class="sidebar-header"><i class="fas fa-calendar-alt"></i> Agenda</div>
+                <div class="sidebar-content">
+                    <p>Belum ada agenda</p>
+                </div>
+            </div>
+
+            <div class="sidebar-block sinergi-program-block">
+                <div class="sidebar-header"><i class="fas fa-external-link-alt"></i> Sinergi Program</div>
+                <div class="sidebar-content">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 5px;"><a href="#" style="text-decoration: none; color: #007bff; font-weight: bold;">Program Kementrian Desa</a></li>
+                        <li style="margin-bottom: 5px;"><a href="#" style="text-decoration: none; color: #007bff; font-weight: bold;">Dana Desa Majalengka</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="sidebar-block galeri-foto-block">
+                <div class="sidebar-header"><i class="fas fa-camera"></i> Galeri Foto</div>
+                <div class="sidebar-content" style="padding: 15px; padding-top: 30px;">
+                    <div class="image-placeholder">&lt;kegiatan&gt;</div>
+                </div>
+            </div>
+
+            <div class="aparatur-sidebar">
+                <div class="aparatur-ribbon">Aparatur</div>
+                <div class="image-box">
+                    <img src="placeholder_aparatur.png" alt="Asep Sonjaya">
+                </div>
+                <div class="info">
+                    <h3>ASEP SONJAYA</h3>
+                    <p>Kepala Desa</p>
+                    <button>Belum Rekam Kehadiran</button>
+                </div>
+            </div>
+
+            <div class="sidebar-block komentar-terbaru-block">
+                <div class="sidebar-header"><i class="fas fa-comments"></i> Komentar Terbaru</div>
+                <div class="sidebar-content">
+                    <p>Belum ada komentar terbaru</p>
+                </div>
+            </div>
+
+            <div class="sidebar-block sosial-media-block">
+                <div class="sidebar-header"><i class="fas fa-share-alt"></i> Info Media Sosial</div>
+                <div class="sidebar-content">
+                    <p style="text-align: center; color: #666;">Konten media sosial</p>
+                </div>
+            </div>
+            
+            <div class="sidebar-block wilayah-desa-block">
+                <div class="sidebar-header"><i class="fas fa-map-marked-alt"></i> Wilayah Desa</div>
+                <div class="sidebar-content">
+                    <div class="map-container">
+                        <div class="map-overlay">Sukamenak</div>
+                        <div style="position: absolute; bottom: 5px; right: 5px; font-size: 0.7em; color: #555;">Leaflet | &copy; <a href="#" style="color: #555;">OpenStreetMap</a> | <a href="#" style="color: #555;">OpenSID</a></div>
+                    </div>
+                    <p>Buka peta</p>
+                </div>
+            </div>
+
+            <div class="sidebar-block lokasi-kantor-sidebar-block">
+                <div class="sidebar-header"><i class="fas fa-map-marker-alt"></i> Lokasi Kantor Desa</div>
+                <div class="sidebar-content">
+                    <div class="map-container">
+                        <i class="fas fa-map-pin" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); font-size: 24px; color: red; z-index: 9;"></i>
+                        <div style="position: absolute; bottom: 5px; right: 5px; font-size: 0.7em; color: #555;">Leaflet | &copy; <a href="#" style="color: #555;">OpenStreetMap</a> | <a href="#" style="color: #555;">OpenSID</a></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="buka-peta">Buka Peta</button>
+                        <button class="detail">Detail</button>
+                    </div>
+                </div>
+            </div>
+
+             <div class="sidebar-block statistik-pengunjung-block statistik-pengunjung">
+                <div class="sidebar-header"><i class="fas fa-chart-line"></i> Statistik Pengunjung</div>
+                <div class="sidebar-content">
+                    <table>
+                        <tr><td>Hari ini</td><td>:</td><td>2</td></tr>
+                        <tr><td>Kemarin</td><td>:</td><td>23</td></tr>
+                        <tr><td>Total Pengunjung</td><td>:</td><td>1.423</td></tr>
+                        <tr><td>Sistem Operasi</td><td>:</td><td>Windows 10</td></tr>
+                        <tr><td>IP Address</td><td>:</td><td>182.253.228.99</td></tr>
+                        <tr><td>Browser</td><td>:</td><td>Chrome 142.0.0.0</td></tr>
+                    </table>
+                </div>
+            </div>
+            
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div style="display: flex; align-items: center;">
+                        <img src="logo.png" alt="Logo Desa" style="width: 30px; height: 30px; margin-right: 10px;">
+                        <div style="font-size: 1.5em; font-weight: bold;">DESA SUKAMENAK</div>
+                    </div>
+                    <p style="font-size: 0.9em;">Website Resmi Pemerintah Desa Sukamenak, Kecamatan Banturujeg, Kabupaten Majalengka</p>
+                </div>
+                
+                <div class="contact-info">
+                    <h4>HUBUNGI KAMI</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Kantor Desa Sukamenak, Banturujeg, Majalengka, Jawa Barat, 45464, Indonesia.</p>
+                    <p><i class="fas fa-phone"></i> Telepon/Fax: 089678482349</p>
+                    <p><i class="fas fa-mobile-alt"></i> No. HP: 089</p>
+                    <p><i class="fas fa-envelope"></i> Email: sukamenak@gmail.com</p>
+                </div>
+
+                <div>
+                    <h4><i class="fas fa-camera"></i> ALBUM GALERI</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+1" alt="Galeri 1" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+2" alt="Galeri 2" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+3" alt="Galeri 3" style="width: 100%; height: auto; border-radius: 3px;">
+                        <img src="https://via.placeholder.com/100x70?text=Galeri+4" alt="Galeri 4" style="width: 100%; height: auto; border-radius: 3px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

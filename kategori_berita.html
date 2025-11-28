@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Desa Sukamenak - Majalengka</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <style>
+        /* Variabel Warna Utama */
+        :root {
+            --color-primary: #17a2b8; /* Biru/Tosca Standard */
+            --color-secondary: #008080; 
+            --color-dark-blue: #005666; 
+            --color-accent: #28a745; /* Warna Hijau Kolom Kiri Sambutan */
+            --color-text: #333;
+            --color-light: #f8f9fa; 
+            
+            /* Warna Khusus Sesuai Screenshot Lokasi & Jam Kerja */
+            --color-header-lokasi: #007AA3; /* Biru Tua/Cyan untuk Header Lokasi & Jam Kerja */
+            --color-button-lokasi: #C48F26; /* Coklat Keemasan */
+            --color-libur: #D9534F; /* Merah untuk Libur */
+            --color-row-even: #f7f7f7; /* Background baris genap yang sangat tipis */
+        }
+
+        /* Tampilan Dasar */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-light);
+            color: var(--color-text);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+         /* --- Konten Berita (Dimulai setelah Hero) --- */
+        .main-content-berita {
+            padding: 30px 0;
+            background-color: white; 
+            position: relative;
+            z-index: 3; 
+        }
+
+        /* --- Header Halaman & Filter --- */
+        .page-header-berita {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--color-text);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        .page-header-berita i {
+            margin-right: 10px;
+            color: var(--color-primary);
+        }
+
+        .filter-nav-berita {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 30px;
+            overflow-x: auto; 
+            padding-bottom: 5px; 
+            white-space: nowrap;
+        }
+
+        /* Gaya Tombol Filter */
+        .filter-btn {
+            background-color: #e9ecef; 
+            color: var(--color-text);
+            border: 1px solid #ced4da;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        /* Filter Aktif */
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--color-filter-active);
+            color: white;
+            border-color: var(--color-filter-active);
+        }
+
+        /* Gaya Dropdown */
+        .filter-dropdown {
+            position: relative;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 10;
+            border-radius: 4px;
+            overflow: hidden;
+            top: 100%; 
+            left: 0;
+        }
+        .filter-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* --- Grid Berita (Card Layout) --- */
+        .berita-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 25px;
+        }
+
+        /* Gaya Kartu Berita */
+        .berita-card {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .berita-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .berita-image-container {
+            width: 100%;
+            height: 180px; 
+            overflow: hidden;
+            background-color: #ccc; 
+            border-bottom: 1px solid #eee;
+        }
+        .berita-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .berita-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .berita-content h3 {
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: var(--color-text);
+            font-weight: bold;
+        }
+
+        .berita-meta {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-bottom: 10px;
+            border-bottom: 1px dotted #e9ecef;
+            padding-bottom: 8px;
+        }
+
+        .berita-excerpt {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+            flex-grow: 1; 
+        }
+        
+        .berita-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: auto; 
+        }
+        
+        /* Simpan tombol tema */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            z-index: 10;
+        }
+
+        /* Responsif */
+        @media (max-width: 992px) {
+            .berita-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-section { height: 350px; }
+        }
+
+        @media (max-width: 600px) {
+            .berita-grid { grid-template-columns: 1fr; }
+            .hero-section { height: 300px; }
+            .hero-content h1 { font-size: 1.5em; }
+            .hero-search-box { width: 90%; }
+        }     
+        
+        
+        .main-nav ul li.home-link a { background-color: var(--color-dark-blue); padding: 15px 18px; }
+        .hero-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; text-align: center; color: white; }
+        .hero-content .logo { width: 100px; height: 100px; background: url('logodesa.jpg') center/contain no-repeat; border-radius: 50%; margin: 0 auto 15px; border: 5px solid white; }
+        .search-box { display: flex; margin: 20px auto 0; border-radius: 5px; overflow: hidden; width: 300px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); background-color: white; }
+        .search-box input { flex-grow: 1; padding: 10px; border: none; outline: none; }
+        .search-box button { background-color: white; color: var(--color-secondary); border: none; padding: 10px 15px; cursor: pointer; font-size: 1.1em; }
+
+        .news-section { padding: 40px 0; }
+        .news-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .news-header h2 { font-size: 2em; color: var(--color-secondary); margin: 0; margin-right: 20px; }
+        
+        .news-categories button { 
+            background-color: var(--color-light); 
+            border: 1px solid #ccc; 
+            padding: 5px 15px; 
+            margin-right: 5px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+        }
+
+ 
+        /* --- Navigasi, Hero, Footer --- */
+        .header-hero { height: 500px; background: url('018943800_1710311605-mountains-8451480_1280.jpg') center/cover no-repeat; position: relative; z-index: 1; }
+        .header-hero::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.2); z-index: 2; }
+        .main-nav { background-color: var(--color-secondary); color: white; padding: 0; position: relative; z-index: 5; }
+        .main-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: flex-start; }
+        
+        .main-nav ul li a { 
+            color: white; 
+            padding: 15px 15px; 
+            display: block; 
+            font-weight: normal; 
+            text-decoration: none;
+        }
+        
+        /* Efek Sentuhan pada Navigasi */
+        .main-nav ul li a:hover { 
+            background-color: var(--color-dark-blue); 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+    </style>
+    </head>
+<body>
+
+    <nav class="main-nav">
+        <div class="container" style="padding: 0;">
+            <ul>
+                <li class="home-link"><a href="index.html"><i class="fas fa-home"></i></a></li>
+                <li><a href="penduduk.html">Penduduk</a></li>
+                <li><a href="galeri.html">Galeri</a></li>
+                <li><a href="program.html">Program</a></li>
+                <li><a href="kategori_berita.html">Berita Desa</a></li>
+                <li><a href="jdih.html">JDIH</a></li>
+                <li><a href="pengaduan.html">Pengaduan Warga</a></li>
+                <li><a href="#">Pembangunan</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="header-hero">
+        <div class="hero-content">
+            <div class="logo"></div> 
+            <h1 style="margin: 5px 0;">SISTEM INFORMASI DESA SUKAMENAK</h1>
+            <p>Kec. Bantureg Kab. Majalengka</p>
+            <div class="search-box">
+                <input type="text" placeholder="Cari..." aria-label="Cari di website desa">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+
+   <div class="container main-content-berita">
+
+        <div class="page-header-berita">
+            <i class="fas fa-newspaper"></i> Berita Desa
+        </div>
+
+        <div class="filter-nav-berita">
+            <a href="#" class="filter-btn active">Terbaru</a>
+            <a href="#" class="filter-btn">Berita Desa</a>
+            <div class="filter-dropdown">
+                <a href="#" class="filter-btn">Pemerintah Majalengka <i class="fas fa-caret-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="#">Layanan Publik</a>
+                    <a href="#">Administrasi</a>
+                </div>
+            </div>
+            <a href="#" class="filter-btn">Kriminal</a>
+            <a href="#" class="filter-btn">Politik</a>
+            <a href="#" class="filter-btn">Wisata</a>
+            <a href="#" class="filter-btn">Teknologi</a>
+        </div>
+
+        <div class="berita-grid">
+            
+            <div class="berita-card">
+                <div class="berita-image-container">
+                    <img src="https://via.placeholder.com/400x180/428bca/ffffff?text=Berita+1" alt="Berita 1">
+                </div>
+                <div class="berita-content">
+                    <h3>Berita dan Pengumuman Desa Sukamenak Majalengka: Informasi Terbaru untuk Warga</h3>
+                    <div class="berita-meta">
+                        <span><i class="fas fa-calendar-alt"></i> 21 Oktober 2025</span>
+                        <span style="float: right;"><i class="fas fa-user"></i> Administrator</span>
+                    </div>
+                    <div class="berita-excerpt">
+                        Majalengka, Jawa Barat — Pemerintah Desa Sukamenak, berkomitmen menghadirkan informasi yang transparan dan akurat kepada seluruh warganya...
+                    </div>
+                    <a href="#" class="berita-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="berita-card">
+                <div class="berita-image-container">
+                    <img src="https://via.placeholder.com/400x180/333333/ffffff?text=Berita+2" alt="Berita 2">
+                </div>
+                <div class="berita-content">
+                    <h3>Informasi dan Layanan Desa: Panduan Lengkap Pelayanan Publik dan Administrasi Desa</h3>
+                    <div class="berita-meta">
+                        <span><i class="fas fa-calendar-alt"></i> 20 Oktober 2025</span>
+                        <span style="float: right;"><i class="fas fa-user"></i> Administrator</span>
+                    </div>
+                    <div class="berita-excerpt">
+                        Desa merupakan ujung tombak pemerintahan yang berhubungan langsung dengan masyarakat. Pelayanan yang prima adalah prioritas kami...
+                    </div>
+                    <a href="#" class="berita-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="berita-card">
+                <div class="berita-image-container">
+                    <img src="https://via.placeholder.com/400x180/dc3545/ffffff?text=Berita+3" alt="Berita 3">
+                </div>
+                <div class="berita-content">
+                    <h3>Pendidikan dan Sosial di Desa Sukamenak, Majalengka: Membangun Masyarakat Cerdas dan Peduli</h3>
+                    <div class="berita-meta">
+                        <span><i class="fas fa-calendar-alt"></i> 19 Oktober 2025</span>
+                        <span style="float: right;"><i class="fas fa-user"></i> Administrator</span>
+                    </div>
+                    <div class="berita-excerpt">
+                        Desa Sukamenak terus menunjukkan komitmennya dalam membangun masyarakat yang cerdas, mandiri, dan berdaya saing tinggi melalui...
+                    </div>
+                    <a href="#" class="berita-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    </script>
+    </body>
+</html>
